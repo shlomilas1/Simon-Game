@@ -1,16 +1,15 @@
 var level = 1;
 
-var sequance = [];
+var sequence = [];
 
 var gameStarted = false;
 var wrong = false;
 
 
 
-$(document).on("keydown",function () {
+$(document).one("keydown",function () {
     gameStarted = true;
-    console.log("key pressed");
-    $(".btn").bind("click" , function () {
+    $(".btn").on("click" , function () {
           playSound($(this).attr("id"));
         }
     ); 
@@ -21,19 +20,16 @@ $(document).on("keydown",function () {
 
 async function game () {
     $("#level-title").text("Level " + level);
-    await compChoose();
-    console.log("comp choose color");
+    compChoose();
     await playerChoose();
-    console.log("player choose color");
-    if (wrong === false) {
-        console.log("continue");
+    if (!wrong) {
         level++;
-        setTimeout(() => {
+        setTimeout(() => {  
             game();
         }, 1000);
     }
     else {
-        console.log("game over");
+        playSound("wrong");
         resetGame();
     }
 }
@@ -49,59 +45,54 @@ function playSound (color) {
 
 function compChoose () {
     let color = rendomColor();
-    sequance.push(color);
+    sequence.push(color);
     playSound(color);
-    $("#" + color).addClass("pressed");  //biuld fadeout css class
+    $("#" + color).addClass("comp-press");  
     setTimeout(() => {
-        $("#" + color).removeClass("pressed");
+        $("#" + color).removeClass("comp-press");
     }, 200);
 }
 
 
 
 async function playerChoose() {
-    for (let i = 0 ; i < sequance.length; i++){
+    for (let i = 0 ; i < sequence.length; i++){
         const playerColorClicked = await new Promise(resolve => {
             $(".btn").one("click", function() {
                 resolve($(this).attr("id"));
             });
         });
-        if(playerColorClicked === sequance[i]){
-            console.log("correct");
-        } else {
+        $("#" + playerColorClicked).addClass("pressed");
+            setTimeout(() => {
+                    $("#" + playerColorClicked).removeClass("pressed");
+                }, 200);
+        if(playerColorClicked !== sequence[i]){
             wrong = true;
             break;
         }
-        console.log("player clicked");
-        console.log(playerColorClicked);
     }  
 }
 
 function resetGame() {
-    $("#level-title").text("Game Over, Press Any Key To Restert");
+    $("#level-title").text("Game Over, Press Any Key To Restart");
     level = 1;
     sequence.length = 0;
     gameStarted = false;
     wrong = false;
-    $(document).on("keydown",function () {
-        gameStarted = true;
-        console.log("key pressed");
-        $(".btn").bind("click" , function () {
-            audio = new Audio("./sounds/" + $(this).attr("id") + ".mp3");
-            audio.play();
-            }
-        ); 
-        game();
-    });
     $("body").addClass("game-over");
     setTimeout(() => {
         $("body").removeClass("game-over");
     }, 200);
     $(".btn").off("click");
-    $(document).on("keydown", function () {
-        if (!gameStarted) {
-            startGame();
-        }
+    $(document).one("keydown",function () {
+        gameStarted = true;
+        $(".btn").on("click" , function () {
+            playSound($(this).attr("id"));
+            }
+        ); 
+        setTimeout(() => {  
+            game();
+        }, 200);
     });
 }
 
@@ -109,12 +100,12 @@ function resetGame() {
 function rendomColor(){
     switch (Math.floor(Math.random()*4 + 1)){
         case 1:
-            return ("red");
+            return "red";
         case 2:
-            return ("blue");
+            return "blue";
         case 3:
-            return ("yellow");
+            return "yellow";
         case 4:
-            return ("green");
+            return "green";
     }
 }
