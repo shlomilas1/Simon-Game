@@ -16,6 +16,15 @@ $(document).one("keydown",function () {
     game();
 });
 
+$(document).one("click",function () {
+    gameStarted = true;
+    $(".btn").on("click" , function () {
+          playSound($(this).attr("id"));
+        }
+    ); 
+    game();
+});
+
 
 
 async function game () {
