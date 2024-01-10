@@ -17,6 +17,10 @@ body {
 
 }
 
+.comp-press{
+  opacity: 20%;
+}
+
 .btn {
   margin: 25px;
   display: inline-block;
